@@ -1,0 +1,16 @@
+<main class="admin-page">
+  <div class="admin-heading"><div><span class="eyebrow"><%= t("admin.live_operation") %></span><h1><%= t("admin.orders_title") %></h1></div><div class="admin-heading__actions"><%= link_to t("admin.back_panel"), admincp_path, class: "text-link" %><%= link_to t("admin.back_products"), admin_products_path, class: "text-link" %></div></div>
+  <div class="admin-table">
+    <% @orders.each do |order| %>
+      <div class="admin-row admin-row--assignment">
+        <div><strong>#<%= order.id %> · <%= order.user.email %></strong><span><%= order.fulfillment_type == "delivery" ? t("common.delivery") : t("common.pickup") %> · <%= t("common.payment") %>: <%= payment_status_label(order.payment_status) %></span></div>
+        <%= render "shared/status_badge", status: order.status, label: order_status_label(order.status) %>
+        <%= form_with url: assign_biker_admin_order_path(order), method: :patch, class: "biker-assignment-form" do |form| %>
+          <%= form.select :biker_id, [[t("admin.unassigned"), ""]] + @bikers.map { |biker| [biker.email, biker.id] }, { selected: order.biker_id, include_blank: false }, aria: { label: t("admin.assign_biker") } %>
+          <%= form.submit t("admin.assign"), class: "secondary-button" %>
+        <% end %>
+        <%= link_to t("admin.view_order"), admin_order_path(order), class: "text-link" %>
+      </div>
+    <% end %>
+  </div>
+</main>

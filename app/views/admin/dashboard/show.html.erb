@@ -1,0 +1,41 @@
+<main class="admin-page">
+  <div class="admin-heading">
+    <div>
+      <span class="eyebrow"><%= t("admincp.eyebrow") %></span>
+      <h1><%= t("admincp.title") %></h1>
+      <p class="admin-intro"><%= t("admincp.intro") %></p>
+    </div>
+    <div class="admin-heading__actions">
+      <%= link_to t("admin.back_store"), root_path, class: "text-link" %>
+      <%= link_to t("pizzeria_settings.link"), edit_admin_pizzeria_setting_path, class: "text-link" %>
+      <%= link_to t("admincp.manage_menu"), admin_products_path, class: "primary-button primary-button--dark" %>
+    </div>
+  </div>
+
+  <section class="admin-stats" aria-label="<%= t("admincp.metrics") %>">
+    <div class="admin-stat admin-stat--green"><span><%= t("admincp.today_orders") %></span><strong><%= @today_orders.size %></strong><small><%= t("admincp.orders_today") %></small></div>
+    <div class="admin-stat admin-stat--peach"><span><%= t("admincp.today_revenue") %></span><% if @today_revenue_by_currency.any? %><% @today_revenue_by_currency.each do |currency, cents| %><strong class="metric-money"><%= number_to_currency(cents / 100.0, unit: currency_unit(currency) + " ") %></strong><% end %><% else %><strong class="metric-money">—</strong><% end %><small><%= t("admincp.paid_today") %></small></div>
+    <div class="admin-stat admin-stat--cream"><span><%= t("admincp.total_revenue") %></span><% if @revenue_by_currency.any? %><% @revenue_by_currency.each do |currency, cents| %><strong class="metric-money"><%= number_to_currency(cents / 100.0, unit: currency_unit(currency) + " ") %></strong><% end %><% else %><strong class="metric-money">—</strong><% end %><small><%= t("admincp.all_paid") %></small></div>
+    <div class="admin-stat admin-stat--white"><span><%= t("admincp.pending") %></span><strong><%= @pending_orders.count %></strong><small><%= t("admincp.to_process") %></small></div>
+  </section>
+
+  <div class="admin-actions">
+    <%= link_to t("admin.view_orders"), admin_orders_path, class: "primary-button primary-button--dark" %>
+    <%= link_to t("admin.manage_menu"), admin_products_path, class: "text-link" %>
+  </div>
+  <div class="admin-bento-grid">
+    <section class="admin-card"><h2><%= t("admincp.operations") %></h2>
+      <% Order::STATUSES.each do |status| %>
+        <div class="metric-row"><span><%= order_status_label(status) %></span><strong><%= @status_counts.fetch(status, 0) %></strong></div>
+      <% end %>
+    </section>
+    <section class="admin-card"><h2><%= t("admincp.channels") %></h2>
+      <div class="metric-row"><span><%= t("common.pickup") %></span><strong><%= @fulfillment_counts.fetch("pickup", 0) %></strong></div>
+      <div class="metric-row"><span><%= t("common.delivery") %></span><strong><%= @fulfillment_counts.fetch("delivery", 0) %></strong></div>
+      <h2><%= t("admincp.payments") %></h2>
+      <% Order::PAYMENT_STATUSES.each do |status| %>
+        <div class="metric-row"><span><%= payment_status_label(status) %></span><strong><%= @payment_counts.fetch(status, 0) %></strong></div>
+      <% end %>
+    </section>
+  </div>
+</main>

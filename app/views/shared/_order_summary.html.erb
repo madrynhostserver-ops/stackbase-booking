@@ -1,0 +1,25 @@
+<div class="order-summary-card">
+  <div class="order-summary-card__heading">
+    <div>
+      <span class="eyebrow">PEDIDO #<%= order.id %></span>
+      <h2><%= t("orders.summary") %></h2>
+    </div>
+    <%= render "shared/status_badge", status: order.status, label: order_status_label(order.status) %>
+  </div>
+  <% order.order_items.each do |item| %>
+    <div class="summary-line">
+      <span><%= item.quantity %> × <%= item.product.name %></span>
+      <strong><%= number_to_currency(item.unit_price_cents * item.quantity / 100.0, unit: order.currency.upcase + " ") %></strong>
+    </div>
+  <% end %>
+  <% if order.delivery_fee_cents.positive? %>
+    <div class="summary-line summary-line--muted">
+      <span><%= t("orders.delivery_fee") %></span>
+      <strong><%= number_to_currency(order.delivery_fee_cents / 100.0, unit: order.currency.upcase + " ") %></strong>
+    </div>
+  <% end %>
+  <div class="summary-total">
+    <span><%= t("common.total") %></span>
+    <strong><%= number_to_currency(order.total_cents / 100.0, unit: order.currency.upcase + " ") %></strong>
+  </div>
+</div>

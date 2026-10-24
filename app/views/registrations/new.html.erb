@@ -1,0 +1,22 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <p class="eyebrow"><%= t("app.name") %></p>
+    <h1><%= t("auth.sign_up_title") %></h1>
+    <p><%= t("products.register_to_order") %></p>
+    <% if @user.errors.any? %>
+      <div class="form-errors">
+        <%= @user.errors.full_messages.to_sentence %>
+      </div>
+    <% end %>
+    <%= form_with model: @user, url: registration_path, class: "form-stack" do |form| %>
+      <%= form.label :email, t("auth.email") %>
+      <%= form.email_field :email, required: true, autocomplete: "email" %>
+      <%= form.label :password, t("auth.password") %>
+      <%= form.password_field :password, required: true, minlength: 8, autocomplete: "new-password" %>
+      <%= form.label :password_confirmation, t("auth.password") %>
+      <%= form.password_field :password_confirmation, required: true, minlength: 8, autocomplete: "new-password" %>
+      <%= form.submit t("auth.sign_up_button"), class: "primary-button primary-button--dark" %>
+    <% end %>
+    <p class="demo-note"><%= t("auth.sign_in_title") %> <%= link_to t("app.sign_in"), new_session_path, class: "text-link" %></p>
+  </section>
+</main>

@@ -1,0 +1,34 @@
+<main class="admin-page">
+  <div class="admin-heading">
+    <div><span class="eyebrow"><%= t("admin.eyebrow") %></span><h1><%= t("admin.greeting") %></h1><p class="admin-intro"><%= t("admin.intro") %></p></div>
+    <div class="admin-heading__actions">
+      <%= link_to t("admin.back_panel"), admincp_path, class: "text-link" %>
+      <%= link_to t("admin.new_pizza"), new_admin_product_path, class: "primary-button primary-button--dark" %>
+      <%= link_to t("admin.new_category"), new_admin_product_path(category: "special"), class: "secondary-button" %>
+    </div>
+  </div>
+  <section class="admin-stats" aria-label="Resumen del local">
+    <div class="admin-stat admin-stat--green"><span><%= t("admin.received") %></span><strong><%= @orders.where(status: %w[received preparing]).count %></strong><small><%= t("admin.to_prepare") %></small></div>
+    <div class="admin-stat admin-stat--peach"><span><%= t("admin.preparing") %></span><strong><%= @orders.where(status: "preparing").count %></strong><small><%= t("admin.in_kitchen") %></small></div>
+    <div class="admin-stat admin-stat--cream"><span><%= t("admin.completed") %></span><strong><%= @orders.where(status: "completed").count %></strong><small><%= t("admin.current_history") %></small></div>
+    <div class="admin-stat admin-stat--white"><span><%= t("admin.available_pizzas") %></span><strong><%= @products.where(published: true, available: true).count %></strong><small><%= t("admin.in_menu") %></small></div>
+  </section>
+  <div class="admin-actions">
+    <%= link_to t("admin.view_orders"), admin_orders_path, class: "primary-button primary-button--dark" %>
+    <%= link_to t("admin.manage_menu"), admin_products_path, class: "text-link" %>
+  </div>
+  <section class="admin-table" aria-labelledby="menu-admin-title">
+    <div class="admin-table__heading"><h2 id="menu-admin-title"><%= t("admin.current_menu") %></h2><span><%= t("admin.products_count", count: @products.size) %></span></div>
+    <% @products.each do |product| %>
+      <div class="admin-row">
+        <%= image_tag pizza_image_url(product, width: 160), alt: "", class: "admin-thumb", loading: "lazy" %>
+        <div><strong><%= product.name %></strong><span><%= t("admin.categories.#{product.category}", default: product.category.humanize) %> · <%= product.published? && product.available? ? t("common.available") : t("common.unavailable") %></span></div>
+        <strong><%= number_to_currency(product.price_cents / 100.0, unit: currency_unit(product.currency) + " ") %></strong>
+        <%= form_with url: toggle_active_admin_product_path(product), method: :patch, class: "product-toggle-form" do |form| %>
+          <%= form.submit product.published? && product.available? ? t("admin.deactivate") : t("admin.activate"), class: product.published? && product.available? ? "secondary-button" : "primary-button" %>
+        <% end %>
+        <%= link_to t("admin.edit"), edit_admin_product_path(product), class: "text-link" %>
+      </div>
+    <% end %>
+  </section>
+</main>

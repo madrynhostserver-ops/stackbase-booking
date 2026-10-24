@@ -1,0 +1,52 @@
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+<% end %>
+<main class="admin-page">
+  <div class="admin-heading">
+    <div>
+      <span class="eyebrow"><%= t("biker.eyebrow") %></span>
+      <h1><%= t("biker.title") %></h1>
+      <p class="admin-intro"><%= current_user.display_name.presence || current_user.email %> · <%= current_user.phone.presence || current_user.email %></p>
+      <p class="form-help"><%= t("biker.origin") %>: <%= @pizzeria_setting.address %></p>
+    </div>
+    <%= link_to t("biker.back_store"), root_path, class: "text-link" %>
+  </div>
+  <% if biker? %>
+    <section class="tracking-card biker-location-card" data-biker-location="<%= bikercp_order_location_path(":id") %>">
+      <h2><%= t("biker.location_title") %></h2>
+      <p data-biker-status><%= t("biker.location_help") %></p>
+      <button type="button" class="primary-button primary-button--dark" data-start-location><%= t("biker.start_location") %></button>
+    </section>
+  <% else %>
+    <section class="tracking-card">
+      <h2><%= t("biker.workers_title") %></h2>
+      <div class="admin-stats">
+        <% @bikers.each do |biker| %>
+          <div class="stat-card">
+            <strong><%= biker.display_name.presence || biker.email %></strong>
+            <span><%= biker.phone.presence || biker.email %> · <%= biker.assigned_orders.count %> <%= t("biker.assigned_count") %></span>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+  <section class="admin-table">
+    <div class="admin-table__heading"><h2><%= t("biker.orders_title") %></h2></div>
+    <% @orders.each do |order| %>
+      <div class="admin-row" data-biker-order="<%= bikercp_order_location_path(order) %>">
+        <div><strong>#<%= order.id %> · <%= order.user.email %></strong><span><%= order.delivery_address %> · <%= order.phone %></span></div>
+        <%= render "shared/status_badge", status: order.status, label: order_status_label(order.status) %>
+        <%= link_to t("biker.view_order"), order_path(order), class: "text-link" %>
+      </div>
+      <% if order.delivery_latitude && order.delivery_longitude %>
+        <div class="biker-route" data-biker-route data-destination-latitude="<%= order.delivery_latitude %>" data-destination-longitude="<%= order.delivery_longitude %>" data-origin-latitude="<%= @pizzeria_setting.latitude %>" data-origin-longitude="<%= @pizzeria_setting.longitude %>">
+          <div class="biker-route__map" data-biker-route-map aria-label="<%= t("biker.route_map_label") %>"></div>
+          <p data-biker-route-status><%= t("biker.route_waiting") %></p>
+        </div>
+      <% else %>
+        <p class="form-help biker-route__missing"><%= t("biker.route_missing") %></p>
+      <% end %>
+    <% end %>
+  </section>
+</main>

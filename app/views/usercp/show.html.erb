@@ -1,0 +1,53 @@
+<main class="admin-page">
+  <div class="admin-heading">
+    <div>
+      <span class="eyebrow"><%= t("usercp.eyebrow") %></span>
+      <h1><%= t("usercp.title") %></h1>
+      <p class="admin-intro"><%= current_user.email %></p>
+    </div>
+    <%= link_to t("usercp.back_menu"), root_path, class: "text-link" %>
+  </div>
+
+  <section class="admin-stats" aria-label="<%= t("usercp.summary") %>">
+    <div class="admin-stat admin-stat--green"><span><%= t("usercp.orders") %></span><strong><%= @orders.size %></strong><small><%= t("usercp.orders_total") %></small></div>
+    <div class="admin-stat admin-stat--peach"><span><%= t("usercp.active_orders") %></span><strong><%= @pending_orders %></strong><small><%= t("usercp.orders_active") %></small></div>
+    <div class="admin-stat admin-stat--cream"><span><%= t("usercp.spent") %></span><% if @spent_by_currency.any? %><% @spent_by_currency.each do |currency, cents| %><strong class="metric-money"><%= number_to_currency(cents / 100.0, unit: currency_unit(currency) + " ") %></strong><% end %><% else %><strong class="metric-money">—</strong><% end %><small><%= t("usercp.paid_orders") %></small></div>
+  </section>
+
+  <section class="account-gallery" aria-labelledby="account-gallery-title">
+    <div class="admin-table__heading">
+      <div>
+        <span class="eyebrow"><%= t("usercp.menu_eyebrow") %></span>
+        <h2 id="account-gallery-title"><%= t("usercp.menu_title") %></h2>
+      </div>
+      <%= link_to t("usercp.browse_menu"), root_path(anchor: "menu"), class: "text-link" %>
+    </div>
+    <div class="account-gallery__grid">
+      <% @featured_products.each do |product| %>
+        <%= link_to product_path(product), class: "account-gallery__card" do %>
+          <%= image_tag pizza_image_url(product, width: 720), alt: product.name, loading: "lazy" %>
+          <span><%= product.name %></span>
+          <strong><%= number_to_currency(product.price_cents / 100.0, unit: product.currency.upcase + " ") %></strong>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="admin-table" aria-labelledby="user-orders-title">
+    <div class="admin-table__heading"><h2 id="user-orders-title"><%= t("usercp.history") %></h2></div>
+    <% if @orders.any? %>
+      <% @orders.each do |order| %>
+        <div class="admin-row">
+          <div>
+            <strong>#<%= order.id %> · <%= order.order_items.map { |item| "#{item.quantity}× #{item.product.name}" }.to_sentence %></strong>
+            <span><%= l(order.created_at, format: :short) %> · <%= order.fulfillment_type == "delivery" ? t("common.delivery") : t("common.pickup") %></span>
+          </div>
+          <%= render "shared/status_badge", status: order.status, label: order_status_label(order.status) %>
+          <%= link_to t("usercp.view_order"), order_path(order), class: "text-link" %>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="empty-state"><%= t("usercp.empty") %></p>
+    <% end %>
+  </section>
+</main>

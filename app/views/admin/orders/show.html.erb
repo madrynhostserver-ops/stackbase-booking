@@ -1,0 +1,22 @@
+<main class="detail-page">
+  <section class="order-card">
+    <div class="form-navigation">
+      <%= link_to "← #{t("admin.back_orders")}", admin_orders_path, class: "back-link" %>
+      <%= link_to t("admin.back_panel"), admincp_path, class: "text-link" %>
+    </div>
+    <p class="eyebrow"><%= t("common.order") %> #<%= @order.id %></p>
+    <h1><%= @order.user.email %></h1>
+    <p><%= t("common.payment") %>: <%= render "shared/status_badge", status: @order.payment_status, label: payment_status_label(@order.payment_status) %></p>
+    <p><%= t("common.operational_status") %>: <%= render "shared/status_badge", status: @order.status, label: order_status_label(@order.status) %></p>
+    <p><%= @order.fulfillment_type == "delivery" ? @order.delivery_address : t("common.pickup") %></p>
+    <p><%= @order.phone %></p>
+    <% @order.order_items.each do |item| %><div class="order-item"><strong><%= item.quantity %> × <%= item.product.name %></strong></div><% end %>
+    <%= form_with url: admin_order_path(@order), method: :patch, class: "form-stack" do |form| %>
+      <%= form.label :biker_id, t("admin.assign_biker") %>
+      <%= form.select :biker_id, [[t("admin.unassigned"), ""]] + @bikers.map { |biker| [biker.email, biker.id] }, { selected: @order.biker_id, include_blank: false } %>
+      <%= form.label :status, t("admin.status_label") %>
+      <%= form.select :status, Order::STATUSES.map { |status| [order_status_label(status), status] }, selected: @order.status %>
+      <%= form.submit t("admin.update_status"), class: "primary-button primary-button--dark" %>
+    <% end %>
+  </section>
+</main>

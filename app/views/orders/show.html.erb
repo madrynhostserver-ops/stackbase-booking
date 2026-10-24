@@ -1,0 +1,28 @@
+<% if @order.fulfillment_type == "delivery" %>
+  <% content_for :head do %>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+  <% end %>
+<% end %>
+<main class="detail-page">
+  <div class="order-detail-layout">
+    <section class="order-card">
+      <span class="eyebrow">PEDIDO #<%= @order.id %></span>
+      <h1><%= @order.paid? ? t("orders.confirmed_title") : t("orders.confirming_title") %></h1>
+      <p><%= @order.paid? ? t("orders.confirmed_description") : t("orders.confirming_description") %></p>
+      <p><strong><%= @order.fulfillment_type == "delivery" ? t("common.delivery") : t("common.pickup") %></strong></p>
+      <p><%= t("common.payment") %>: <%= render "shared/status_badge", status: @order.payment_status, label: payment_status_label(@order.payment_status) %></p>
+    </section>
+    <%= render "shared/order_summary", order: @order %>
+  </div>
+  <% if @order.fulfillment_type == "delivery" %>
+    <section class="tracking-card" data-order-tracking="<%= tracking_order_path(@order) %>">
+      <span class="eyebrow"><%= t("tracking.eyebrow") %></span>
+      <h2><%= t("tracking.title") %></h2>
+      <p data-tracking-status><%= t("tracking.waiting") %></p>
+      <p class="tracking-eta" data-tracking-eta="<%= t("tracking.eta") %>"></p>
+      <div class="tracking-map" data-tracking-map aria-label="<%= t("tracking.map_label") %>"></div>
+      <small data-tracking-updated></small>
+    </section>
+  <% end %>
+</main>

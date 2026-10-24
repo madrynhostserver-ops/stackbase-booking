@@ -1,0 +1,52 @@
+<main class="landing-shell">
+  <section class="bento-hero" aria-labelledby="hero-title">
+    <div class="hero-copy-card">
+      <span class="eyebrow"><%= t("home.eyebrow") %></span>
+      <h1 id="hero-title"><%= t("home.title_html").html_safe %></h1>
+      <p><%= t("home.description") %></p>
+      <%= link_to t("home.menu_cta"), "#menu", class: "primary-button primary-button--dark" %>
+      <div class="hero-signature"><span>●</span> <%= t("home.signature") %></div>
+    </div>
+    <div class="hero-image-card">
+      <% if @products.first %>
+        <%= image_tag pizza_image_url(@products.first, width: 1200), alt: @products.first.name, class: "hero-image" %>
+      <% end %>
+      <div class="hero-image-label"><strong><%= t("home.oven_title") %></strong><span><%= t("home.oven_description") %></span></div>
+    </div>
+  </section>
+
+  <section class="service-grid" aria-label="<%= t("home.services_label") %>">
+    <article class="service-card service-card--green">
+      <span class="service-icon" aria-hidden="true">↗</span>
+      <span class="eyebrow"><%= t("home.delivery_eyebrow") %></span>
+      <h2><%= t("home.delivery_title") %></h2>
+      <p><%= t("home.delivery_description") %></p>
+    </article>
+    <article class="service-card service-card--peach">
+      <span class="service-icon" aria-hidden="true">⌂</span>
+      <span class="eyebrow"><%= t("home.pickup_eyebrow") %></span>
+      <h2><%= t("home.pickup_title") %></h2>
+      <p><%= t("home.pickup_description") %></p>
+    </article>
+    <article class="service-card service-card--cream">
+      <span class="eyebrow"><%= t("home.today_eyebrow") %></span>
+      <strong class="service-number"><%= @products.size %></strong>
+      <p><%= t("home.today_description") %></p>
+    </article>
+  </section>
+
+  <section id="menu" class="menu-section" aria-labelledby="menu-title">
+    <div class="section-heading section-heading--bento">
+      <div>
+        <span class="eyebrow"><%= t("home.menu_eyebrow") %></span>
+        <h2 id="menu-title"><%= t("home.menu_title") %></h2>
+      </div>
+      <span><%= t("home.available_count", count: @products.size) %></span>
+    </div>
+    <div class="pizza-grid">
+      <% @products.each do |product| %>
+        <%= render "pizza_card", product: product %>
+      <% end %>
+    </div>
+  </section>
+</main>

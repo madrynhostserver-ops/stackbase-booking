@@ -1,0 +1,17 @@
+<%= form_with model: [:admin, @product], class: "form-stack" do |form| %>
+  <%= form.label :name, t("common.pizza") %><%= form.text_field :name, required: true %>
+  <%= form.label :description, t("products.notes") %><%= form.text_area :description, required: true, rows: 3 %>
+  <%= form.label :price_cents, t("common.total") %><%= form.number_field :price_cents, required: true, min: 1 %>
+  <%= form.label :currency, t("admin.currency") %>
+  <%= form.select :currency, [[t("admin.currencies.eur"), "eur"], [t("admin.currencies.usd"), "usd"], [t("admin.currencies.ars"), "ars"]], { include_blank: false } %>
+  <%= form.label :category, t("admin.category") %>
+  <%= form.select :category, Product::CATEGORIES.map { |category| [t("admin.categories.#{category}"), category] }, { include_blank: false } %>
+  <%= form.label :sales_channel, t("admin.sales_channel") %>
+  <%= form.select :sales_channel, [[t("admin.online_payment"), "online"], [t("admin.store_only"), "store_only"]], { include_blank: false } %>
+  <%= form.label :image, t("admin.photo") %>
+  <%= form.file_field :image, accept: "image/jpeg,image/png,image/webp" %>
+  <small class="form-help"><%= t("admin.photo_help") %></small>
+  <%= form.label :published, t("admin.published") %><%= form.check_box :published %>
+  <%= form.label :available, t("admin.available_for_sale") %><%= form.check_box :available %>
+  <%= form.submit t("admin.save"), class: "primary-button primary-button--dark" %>
+<% end %>

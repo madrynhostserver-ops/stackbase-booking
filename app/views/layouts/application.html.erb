@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <title><%= content_for(:title) || t("app.name") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="<%= t("app.name") %>">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app %>
+    <%= javascript_include_tag "application", defer: true %>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <%= link_to "STACKBASE", root_path, class: "brand" %>
+      <nav>
+        <div class="language-switcher" aria-label="<%= t("app.language") %>">
+          <%= link_to "EN", url_for(locale: :en), class: ("active" if I18n.locale == :en) %>
+          <%= link_to "ES", url_for(locale: :es), class: ("active" if I18n.locale == :es) %>
+          <%= link_to "HR", url_for(locale: :hr), class: ("active" if I18n.locale == :hr) %>
+        </div>
+        <% if logged_in? %>
+          <span class="user-label"><%= current_user.email %></span>
+          <%= link_to t("app.account"), usercp_path %>
+          <%= link_to t("app.panel"), admincp_path if current_user.role == "admin" %>
+          <%= link_to t("app.worker_panel"), bikercp_path if biker? || admin? %>
+          <%= button_to t("app.sign_out"), session_path, method: :delete, class: "link-button" %>
+        <% else %>
+          <%= link_to t("app.sign_in"), new_session_path, class: "nav-link" %>
+          <%= link_to t("app.sign_up"), new_registration_path, class: "nav-link nav-cta" %>
+        <% end %>
+      </nav>
+    </header>
+    <% flash.each do |type, message| %>
+      <div class="flash <%= type %>" role="status"><%= message %></div>
+    <% end %>
+    <%= yield %>
+  </body>
+</html>

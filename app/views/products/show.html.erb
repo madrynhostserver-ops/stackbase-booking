@@ -1,0 +1,71 @@
+<main class="detail-shell">
+  <% content_for :head do %>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+  <% end %>
+  <%= link_to "← #{t("products.view_menu")}", root_path, class: "back-link" %>
+  <div class="product-detail-bento">
+    <div class="detail-image-card">
+      <%= image_tag pizza_image_url(@product, width: 1200), alt: @product.name, class: "detail-image" %>
+      <span class="detail-image-caption"><%= t("products.baked_now") %></span>
+    </div>
+    <section class="detail-info">
+      <span class="eyebrow"><%= t("products.artisan_pizza") %></span>
+      <h1><%= @product.name %></h1>
+      <p class="detail-description"><%= pizza_description(@product) %></p>
+      <div class="detail-price" data-order-price="<%= @product.price_cents %>" data-order-currency="<%= @product.currency.upcase %>">
+        <span><%= t("products.from") %></span>
+        <strong><%= number_to_currency(@product.price_cents / 100.0, unit: @product.currency.upcase + " ") %></strong>
+      </div>
+      <% if @product.sales_channel == "store_only" %>
+        <div class="local-only-notice" role="status"><strong><%= t("products.store_only_title") %></strong><p><%= t("products.store_only_description") %></p></div>
+      <% elsif logged_in? %>
+        <%= form_with url: orders_path, method: :post, class: "order-form bento-form", data: { order_form: true } do |form| %>
+          <%= hidden_field_tag :product_id, @product.id %>
+          <div class="form-field">
+            <%= form.label :quantity, t("products.quantity") %>
+            <%= form.number_field :quantity, value: 1, min: 1, max: 20, required: true %>
+          </div>
+          <div class="form-field">
+            <%= form.label :fulfillment_type, t("products.how_receive") %>
+            <%= form.select :fulfillment_type, [[t("common.pickup"), "pickup"], [t("common.delivery"), "delivery"]], {}, data: { delivery_target: "type" } %>
+          </div>
+          <div class="form-field">
+            <%= form.label :delivery_zone, t("products.delivery_zone") %>
+            <%= form.select :delivery_zone, PizzeriaRules.zone_options, { include_blank: t("products.select_zone") } %>
+          </div>
+          <div class="form-field">
+            <%= form.label :phone, t("products.phone") %>
+            <%= form.telephone_field :phone, required: true, placeholder: "+34 600 000 000" %>
+          </div>
+          <div class="form-field">
+            <%= form.label :delivery_address, t("products.delivery_address") %>
+            <%= form.text_field :delivery_address, placeholder: t("products.address_placeholder") %>
+          </div>
+          <div class="delivery-location" data-delivery-location>
+            <div class="delivery-location__heading">
+              <strong><%= t("products.location_title") %></strong>
+              <button type="button" class="secondary-button" data-use-location><%= t("products.use_location") %></button>
+            </div>
+            <p class="form-help" data-location-status><%= t("products.location_help") %></p>
+            <div id="delivery-map" class="delivery-map" aria-label="<%= t("products.map_label") %>"></div>
+            <%= form.hidden_field :delivery_latitude, data: { location_latitude: true } %>
+            <%= form.hidden_field :delivery_longitude, data: { location_longitude: true } %>
+          </div>
+          <div class="form-field">
+            <%= form.label :notes, t("products.notes") %>
+            <%= form.text_area :notes, rows: 2, placeholder: t("products.notes_placeholder") %>
+          </div>
+          <div class="order-summary order-summary--form" aria-live="polite">
+            <span><%= t("products.estimated_total") %></span>
+            <strong data-order-total><%= number_to_currency(@product.price_cents / 100.0, unit: @product.currency.upcase + " ") %></strong>
+          </div>
+          <%= form.submit t("products.continue_payment"), class: "primary-button primary-button--dark", data: { submit_feedback: true } %>
+        <% end %>
+      <% else %>
+        <%= link_to t("products.register_to_order"), new_registration_path, class: "primary-button primary-button--dark" %>
+      <% end %>
+      <p class="secure-note"><%= t("products.secure_payment") %></p>
+    </section>
+  </div>
+</main>

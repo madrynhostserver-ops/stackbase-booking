@@ -1,0 +1,18 @@
+<article class="bento-card pizza-card">
+  <%= link_to product_path(product), class: "pizza-card__image-link", aria: { label: product.name } do %>
+    <%= image_tag pizza_image_url(product, width: 720), class: "pizza-card__image", alt: product.name, loading: "lazy" %>
+    <span class="pizza-card__arrow" aria-hidden="true">↗</span>
+  <% end %>
+  <div class="pizza-card__body">
+    <div class="pizza-card__meta">
+      <span class="tag"><%= t("common.artisan") %></span>
+      <span class="availability-dot"><%= product.available? ? t("common.available") : t("common.unavailable") %></span>
+    </div>
+    <h3><%= link_to product.name, product_path(product) %></h3>
+    <p><%= pizza_description(product) %></p>
+    <div class="pizza-card__footer">
+      <strong><%= number_to_currency(product.price_cents / 100.0, unit: product.currency.upcase + " ") %></strong>
+      <%= link_to t("products.order"), product_path(product), class: "card-action" %>
+    </div>
+  </div>
+</article>

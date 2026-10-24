@@ -1,0 +1,33 @@
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+<% end %>
+<main class="admin-page">
+  <div class="admin-heading">
+    <div>
+      <span class="eyebrow"><%= t("admincp.eyebrow") %></span>
+      <h1><%= t("pizzeria_settings.title") %></h1>
+      <p class="admin-intro"><%= t("pizzeria_settings.intro") %></p>
+    </div>
+    <%= link_to t("admin.back_panel"), admincp_path, class: "text-link" %>
+  </div>
+
+  <section class="form-card admin-form-card" data-pizzeria-location>
+    <%= form_with model: @setting, url: admin_pizzeria_setting_path, method: :patch, class: "form-stack" do |form| %>
+      <% if @setting.errors.any? %>
+        <div class="flash alert"><%= @setting.errors.full_messages.to_sentence %></div>
+      <% end %>
+      <%= form.label :address, t("pizzeria_settings.address") %>
+      <%= form.text_field :address, required: true %>
+      <%= form.label :latitude, t("pizzeria_settings.latitude") %>
+      <%= form.number_field :latitude, step: "any", required: false %>
+      <%= form.label :longitude, t("pizzeria_settings.longitude") %>
+      <%= form.number_field :longitude, step: "any", required: false %>
+      <p class="form-help"><%= t("pizzeria_settings.coordinates_help") %></p>
+      <button type="button" class="secondary-button" data-use-pizzeria-location><%= t("pizzeria_settings.use_location") %></button>
+      <p class="form-help" data-pizzeria-location-status><%= t("pizzeria_settings.location_help") %></p>
+      <div class="pizzeria-location-map" data-pizzeria-location-map aria-label="<%= t("pizzeria_settings.map_label") %>"></div>
+      <%= form.submit t("pizzeria_settings.save"), class: "primary-button primary-button--dark" %>
+    <% end %>
+  </section>
+</main>

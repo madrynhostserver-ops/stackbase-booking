@@ -1,0 +1,11 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <div class="form-navigation">
+      <%= link_to "← #{t("admin.back_products")}", admin_products_path, class: "back-link" %>
+      <%= link_to t("admin.back_panel"), admincp_path, class: "text-link" %>
+    </div>
+    <p class="eyebrow"><%= t("admin.eyebrow") %></p>
+    <h1><%= t("admin.edit_title") %></h1>
+    <%= render "form" %>
+  </section>
+</main>
