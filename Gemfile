@@ -6,7 +6,7 @@ gem "rails", "~> 8.1.4"
 gem "propshaft"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
-gem "stripe", "~> 13.0"
+gem "stripe", "~> 20.0"
 gem "dotenv-rails", groups: %i[development test]
 gem "bcrypt", "~> 3.1"
 gem "faker", "~> 3.5"
